@@ -1,0 +1,14 @@
+package com.example.demo.serviceImpl;
+
+import com.example.demo.constants.MessageContants;
+import com.example.demo.service.MediaService;
+
+public class VedioMediaServiceImpl implements MediaService{
+
+	@Override
+	public String playMedia() {
+		// TODO Auto-generated method stub
+		return MessageContants.VEDIO_MEDIA;
+	}
+
+}
