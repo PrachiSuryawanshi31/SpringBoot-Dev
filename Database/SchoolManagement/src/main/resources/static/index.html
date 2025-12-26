@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ABC School Hub</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-r from-yellow-50 via-purple-50 to-pink-50 min-h-screen font-sans">
+
+<div class="max-w-6xl mx-auto p-6">
+
+  <!-- HOMEPAGE -->
+  <section id="homepage" class="text-center py-20 space-y-6">
+    <h1 class="text-6xl font-bold text-gradient bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-500 drop-shadow-lg">🏫 School System</h1>
+    <p class="text-gray-700 text-lg max-w-xl mx-auto">Simplify school management! Add, view, and remove staff, students, and teachers with ease.</p>
+    <img src="https://i.pinimg.com/736x/08/7b/45/087b45d258ba5daaa66d46f7a8107103.jpg" alt="School" class="w-72 h-72 mx-auto rounded-full shadow-2xl">
+    <button onclick="showPage('selection')" class="mt-6 bg-purple-600 text-white px-10 py-3 rounded-full text-xl font-semibold shadow-lg hover:scale-105 transition-transform">
+      🚀 Start Managing
+    </button>
+  </section>
+
+  <!-- SELECTION PAGE -->
+  <section id="selection" class="hidden text-center py-16 space-y-6">
+    <h2 class="text-4xl font-bold text-purple-700 drop-shadow-md">Select Management Area</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+      <div onclick="showPage('staff')" class="bg-purple-100 p-8 rounded-3xl shadow-xl cursor-pointer hover:scale-105 transition-transform">
+        <i class="fas fa-user-tie text-6xl text-purple-600 mb-4"></i>
+        <h3 class="text-2xl font-semibold text-purple-700">Staff</h3>
+      </div>
+      <div onclick="showPage('student')" class="bg-green-100 p-8 rounded-3xl shadow-xl cursor-pointer hover:scale-105 transition-transform">
+        <i class="fas fa-user-graduate text-6xl text-green-600 mb-4"></i>
+        <h3 class="text-2xl font-semibold text-green-700">Student</h3>
+      </div>
+      <div onclick="showPage('teacher')" class="bg-pink-100 p-8 rounded-3xl shadow-xl cursor-pointer hover:scale-105 transition-transform">
+        <i class="fas fa-chalkboard-teacher text-6xl text-pink-600 mb-4"></i>
+        <h3 class="text-2xl font-semibold text-pink-700">Teacher</h3>
+      </div>
+    </div>
+    <button onclick="showPage('homepage')" class="mt-8 bg-gray-300 text-gray-800 px-6 py-2 rounded-full hover:bg-gray-400 transition">🔙 Home</button>
+  </section>
+
+  <!-- STAFF PAGE -->
+  <section id="staff" class="hidden py-12 space-y-6">
+    <h2 class="text-3xl font-bold text-purple-700 text-center">👨‍💼 Staff Management</h2>
+    <button onclick="showPage('selection')" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-full hover:bg-gray-400 transition">🔙 Back</button>
+
+    <div class="flex justify-center gap-4">
+      <button onclick="showStaffForm('add')" class="bg-purple-500 text-white px-6 py-3 rounded-full hover:scale-105 transition">➕ Add</button>
+      <button onclick="showStaffForm('get')" class="bg-green-500 text-white px-6 py-3 rounded-full hover:scale-105 transition">🔍 Get</button>
+      <button onclick="showStaffForm('delete')" class="bg-red-500 text-white px-6 py-3 rounded-full hover:scale-105 transition">🗑 Delete</button>
+    </div>
+
+    <div id="staffAdd" class="hidden mt-6 max-w-md mx-auto bg-white p-6 rounded-2xl shadow-lg space-y-3">
+      <input id="staffId" placeholder="ID" class="border p-2 rounded w-full">
+      <input id="staffName" placeholder="Name" class="border p-2 rounded w-full">
+      <input id="staffRole" placeholder="Role" class="border p-2 rounded w-full">
+      <button onclick="addStaff()" class="w-full bg-purple-600 text-white py-2 rounded-full hover:scale-105 transition">Add Staff</button>
+    </div>
+
+    <div id="staffGet" class="hidden mt-6 max-w-md mx-auto bg-white p-6 rounded-2xl shadow-lg space-y-3">
+      <input id="staffGetId" placeholder="ID" class="border p-2 rounded w-full">
+      <button onclick="getStaff()" class="w-full bg-green-600 text-white py-2 rounded-full hover:scale-105 transition">Get Staff</button>
+      <pre id="staffResult" class="bg-gray-100 p-3 rounded h-28 overflow-auto"></pre>
+    </div>
+
+    <div id="staffDelete" class="hidden mt-6 max-w-md mx-auto bg-white p-6 rounded-2xl shadow-lg space-y-3">
+      <input id="staffDelId" placeholder="ID" class="border p-2 rounded w-full">
+      <button onclick="deleteStaff()" class="w-full bg-red-600 text-white py-2 rounded-full hover:scale-105 transition">Delete Staff</button>
+    </div>
+  </section>
+
+  <!-- STUDENT PAGE -->
+  <section id="student" class="hidden py-12 space-y-6">
+    <h2 class="text-3xl font-bold text-green-700 text-center">🎓 Student Management</h2>
+    <button onclick="showPage('selection')" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-full hover:bg-gray-400 transition">🔙 Back</button>
+
+    <div class="flex justify-center gap-4">
+      <button onclick="showStudentForm('add')" class="bg-green-500 text-white px-6 py-3 rounded-full hover:scale-105 transition">➕ Add</button>
+      <button onclick="showStudentForm('get')" class="bg-green-600 text-white px-6 py-3 rounded-full hover:scale-105 transition">🔍 Get</button>
+      <button onclick="showStudentForm('delete')" class="bg-red-500 text-white px-6 py-3 rounded-full hover:scale-105 transition">🗑 Delete</button>
+    </div>
+
+    <div id="studentAdd" class="hidden mt-6 max-w-md mx-auto bg-white p-6 rounded-2xl shadow-lg space-y-3">
+      <input id="studentId" placeholder="ID" class="border p-2 rounded w-full">
+      <input id="studentName" placeholder="Name" class="border p-2 rounded w-full">
+      <input id="studentStandard" placeholder="Standard" class="border p-2 rounded w-full">
+      <input id="studentDivision" placeholder="Division" class="border p-2 rounded w-full">
+      <button onclick="addStudent()" class="w-full bg-green-600 text-white py-2 rounded-full hover:scale-105 transition">Add Student</button>
+    </div>
+
+    <div id="studentGet" class="hidden mt-6 max-w-md mx-auto bg-white p-6 rounded-2xl shadow-lg space-y-3">
+      <input id="studentGetId" placeholder="ID" class="border p-2 rounded w-full">
+      <button onclick="getStudent()" class="w-full bg-green-600 text-white py-2 rounded-full hover:scale-105 transition">Get Student</button>
+      <pre id="studentResult" class="bg-gray-100 p-3 rounded h-28 overflow-auto"></pre>
+    </div>
+
+    <div id="studentDelete" class="hidden mt-6 max-w-md mx-auto bg-white p-6 rounded-2xl shadow-lg space-y-3">
+      <input id="studentDelId" placeholder="ID" class="border p-2 rounded w-full">
+      <button onclick="deleteStudent()" class="w-full bg-red-600 text-white py-2 rounded-full hover:scale-105 transition">Delete Student</button>
+    </div>
+  </section>
+
+  <!-- TEACHER PAGE -->
+  <section id="teacher" class="hidden py-12 space-y-6">
+    <h2 class="text-3xl font-bold text-pink-700 text-center">👩‍🏫 Teacher Management</h2>
+    <button onclick="showPage('selection')" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-full hover:bg-gray-400 transition">🔙 Back</button>
+
+    <div class="flex justify-center gap-4">
+      <button onclick="showTeacherForm('add')" class="bg-pink-500 text-white px-6 py-3 rounded-full hover:scale-105 transition">➕ Add</button>
+      <button onclick="showTeacherForm('get')" class="bg-green-500 text-white px-6 py-3 rounded-full hover:scale-105 transition">🔍 Get</button>
+      <button onclick="showTeacherForm('delete')" class="bg-red-500 text-white px-6 py-3 rounded-full hover:scale-105 transition">🗑 Delete</button>
+    </div>
+
+    <div id="teacherAdd" class="hidden mt-6 max-w-md mx-auto bg-white p-6 rounded-2xl shadow-lg space-y-3">
+      <input id="teacherId" placeholder="ID" class="border p-2 rounded w-full">
+      <input id="teacherName" placeholder="Name" class="border p-2 rounded w-full">
+      <input id="teacherAddress" placeholder="Address" class="border p-2 rounded w-full">
+      <input id="teacherSubjects" placeholder="Subjects" class="border p-2 rounded w-full">
+      <button onclick="addTeacher()" class="w-full bg-pink-600 text-white py-2 rounded-full hover:scale-105 transition">Add Teacher</button>
+    </div>
+
+    <div id="teacherGet" class="hidden mt-6 max-w-md mx-auto bg-white p-6 rounded-2xl shadow-lg space-y-3">
+      <input id="teacherGetId" placeholder="ID" class="border p-2 rounded w-full">
+      <button onclick="getTeacher()" class="w-full bg-green-600 text-white py-2 rounded-full hover:scale-105 transition">Get Teacher</button>
+      <pre id="teacherResult" class="bg-gray-100 p-3 rounded h-28 overflow-auto"></pre>
+    </div>
+
+    <div id="teacherDelete" class="hidden mt-6 max-w-md mx-auto bg-white p-6 rounded-2xl shadow-lg space-y-3">
+      <input id="teacherDelId" placeholder="ID" class="border p-2 rounded w-full">
+      <button onclick="deleteTeacher()" class="w-full bg-red-600 text-white py-2 rounded-full hover:scale-105 transition">Delete Teacher</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+const API="http://localhost:8080";
+function showPage(id){
+  document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+function capitalize(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+function showStaffForm(a){['staffAdd','staffGet','staffDelete'].forEach(i=>document.getElementById(i).classList.add('hidden'));document.getElementById('staff'+capitalize(a)).classList.remove('hidden')}
+function showStudentForm(a){['studentAdd','studentGet','studentDelete'].forEach(i=>document.getElementById(i).classList.add('hidden'));document.getElementById('student'+capitalize(a)).classList.remove('hidden')}
+function showTeacherForm(a){['teacherAdd','teacherGet','teacherDelete'].forEach(i=>document.getElementById(i).classList.add('hidden'));document.getElementById('teacher'+capitalize(a)).classList.remove('hidden')}
+
+// STAFF
+async function addStaff(){const s={id:staffId.value,name:staffName.value,role:staffRole.value};const res=await fetch(`${API}/staff/add`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(s)});alert(await res.text());staffId.value=staffName.value=staffRole.value=''}
+async function getStaff(){staffResult.textContent=JSON.stringify(await (await fetch(`${API}/staff/${staffGetId.value}`)).json(),null,2)}
+async function deleteStaff(){alert(await (await fetch(`${API}/staff/${staffDelId.value}`,{method:'DELETE'})).text());staffDelId.value='';staffResult.textContent=''}
+
+// STUDENT
+async function addStudent(){const s={id:studentId.value,name:studentName.value,standard:studentStandard.value,division:studentDivision.value};const res=await fetch(`${API}/student/add`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(s)});alert(await res.text());studentId.value=studentName.value=studentStandard.value=studentDivision.value=''}
+async function getStudent(){studentResult.textContent=JSON.stringify(await (await fetch(`${API}/student/${studentGetId.value}`)).json(),null,2)}
+async function deleteStudent(){alert(await (await fetch(`${API}/student/${studentDelId.value}`,{method:'DELETE'})).text());studentDelId.value='';studentResult.textContent=''}
+
+// TEACHER
+async function addTeacher(){const t={id:teacherId.value,name:teacherName.value,address:teacherAddress.value,subjects:teacherSubjects.value};const res=await fetch(`${API}/teacher/add`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(t)});alert(await res.text());teacherId.value=teacherName.value=teacherAddress.value=teacherSubjects.value=''}
+async function getTeacher(){teacherResult.textContent=JSON.stringify(await (await fetch(`${API}/teacher/${teacherGetId.value}`)).json(),null,2)}
+async function deleteTeacher(){alert(await (await fetch(`${API}/teacher/${teacherDelId.value}`,{method:'DELETE'})).text());teacherDelId.value='';teacherResult.textContent=''}
+</script>
+
+</body>
+</html>
