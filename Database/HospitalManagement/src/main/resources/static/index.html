@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hospital Management Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .input {
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 100%;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+        .btn-blue {
+            width: 100%;
+            background: linear-gradient(to right, #3b82f6, #1e40af);
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 5px;
+        }
+        .btn-purple {
+            width: 100%;
+            background: linear-gradient(to right, #8b5cf6, #5b21b6);
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 5px;
+        }
+        .btn-red {
+            width: 100%;
+            background: linear-gradient(to right, #ef4444, #991b1b);
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 5px;
+        }
+        .btn-green {
+            width: 100%;
+            background: linear-gradient(to right, #22c55e, #15803d);
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 5px;
+        }
+        .result-box {
+            background: #f9fafb;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 10px;
+            max-height: 150px;
+            overflow: auto;
+            white-space: pre-wrap;
+        }
+        .message {
+            margin-top: 5px;
+            font-weight: bold;
+        }
+        .message-success { color: green; }
+        .message-error { color: red; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-200 to-blue-50 min-h-screen">
+
+<!-- NAVBAR -->
+<nav class="bg-white shadow-lg p-5 flex justify-between items-center">
+    <h1 class="text-3xl font-bold text-blue-700 drop-shadow">🏥 Hospital Dashboard</h1>
+    <div class="flex gap-6">
+        <button onclick="showPage('home')" class="hover:text-blue-700 font-semibold">Home</button>
+        <button onclick="showPage('doctorPage')" class="hover:text-blue-700 font-semibold">Doctor</button>
+        <button onclick="showPage('patientPage')" class="hover:text-blue-700 font-semibold">Patient</button>
+    </div>
+</nav>
+
+<!-- ===================== HOME PAGE ===================== -->
+<div id="home" class="p-10 animate-[fade_0.5s]">
+    <div class="max-w-4xl mx-auto text-center mt-10">
+        <h2 class="text-4xl font-bold text-blue-800 mb-6">Welcome to Hospital Management System</h2>
+        <p class="text-lg text-gray-700 leading-relaxed">
+            This dashboard helps you manage <strong>Doctor</strong> and 
+            <strong>Patient</strong> information easily.  
+            Use the navigation menu to Add, Search, and Delete Records.
+        </p>
+        <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-xl">
+                <h3 class="text-2xl font-semibold text-blue-600 mb-2">👨‍⚕️ Doctor Module</h3>
+                <p class="text-gray-600">Add, Search and Delete doctor data.</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-xl">
+                <h3 class="text-2xl font-semibold text-green-600 mb-2">🧑‍🤝‍🧑 Patient Module</h3>
+                <p class="text-gray-600">Manage patient name, gender, age & disease.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== DOCTOR PAGE ===================== -->
+<div id="doctorPage" class="hidden p-10 animate-[fade_0.5s]">
+    <h2 class="text-3xl font-bold text-blue-900 mb-8 text-center">Doctor Management</h2>
+    <div class="grid md:grid-cols-3 gap-8">
+        <!-- Add Doctor -->
+        <div class="bg-white p-6 rounded-xl shadow-xl">
+            <h3 class="text-xl font-semibold mb-4 text-blue-600">Add Doctor</h3>
+            <input id="did" type="number" placeholder="ID" class="input">
+            <input id="dname" type="text" placeholder="Name" class="input">
+            <input id="dage" type="number" placeholder="Age" class="input">
+            <input id="dspl" type="text" placeholder="Specialization" class="input">
+            <button onclick="addDoctor()" class="btn-blue">Save</button>
+            <div id="doctorAddMsg" class="message"></div>
+        </div>
+
+        <!-- Get Doctor -->
+        <div class="bg-white p-6 rounded-xl shadow-xl">
+            <h3 class="text-xl font-semibold mb-4 text-indigo-600">Search Doctor</h3>
+            <input id="dgetId" type="number" placeholder="Enter ID" class="input">
+            <button onclick="getDoctor()" class="btn-purple">Get</button>
+            <pre id="doctorResult" class="result-box"></pre>
+            <div id="doctorGetMsg" class="message"></div>
+        </div>
+
+        <!-- Delete Doctor -->
+        <div class="bg-white p-6 rounded-xl shadow-xl">
+            <h3 class="text-xl font-semibold mb-4 text-red-600">Delete Doctor</h3>
+            <input id="ddelId" type="number" placeholder="Enter ID" class="input">
+            <button onclick="deleteDoctor()" class="btn-red">Delete</button>
+            <div id="doctorDelMsg" class="message"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== PATIENT PAGE ===================== -->
+<div id="patientPage" class="hidden p-10 animate-[fade_0.5s]">
+    <h2 class="text-3xl font-bold text-green-900 mb-8 text-center">Patient Management</h2>
+    <div class="grid md:grid-cols-3 gap-8">
+        <!-- Add Patient -->
+        <div class="bg-white p-6 rounded-xl shadow-xl">
+            <h3 class="text-xl font-semibold mb-4 text-green-600">Add Patient</h3>
+            <input id="pid" type="number" placeholder="ID" class="input">
+            <input id="pname" type="text" placeholder="Name" class="input">
+            <input id="pgender" type="text" placeholder="Gender" class="input">
+            <input id="page" type="number" placeholder="Age" class="input">
+            <input id="pdisease" type="text" placeholder="Disease" class="input">
+            <button onclick="addPatient()" class="btn-green">Save</button>
+            <div id="patientAddMsg" class="message"></div>
+        </div>
+
+        <!-- Get Patient -->
+        <div class="bg-white p-6 rounded-xl shadow-xl">
+            <h3 class="text-xl font-semibold mb-4 text-blue-600">Search Patient</h3>
+            <input id="pgetId" type="number" placeholder="Enter ID" class="input">
+            <button onclick="getPatient()" class="btn-blue">Get</button>
+            <pre id="patientResult" class="result-box"></pre>
+            <div id="patientGetMsg" class="message"></div>
+        </div>
+
+        <!-- Delete Patient -->
+        <div class="bg-white p-6 rounded-xl shadow-xl">
+            <h3 class="text-xl font-semibold mb-4 text-red-600">Delete Patient</h3>
+            <input id="pdelId" type="number" placeholder="Enter ID" class="input">
+            <button onclick="deletePatient()" class="btn-red">Delete</button>
+            <div id="patientDelMsg" class="message"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function showPage(page){
+        document.getElementById("home").classList.add("hidden");
+        document.getElementById("doctorPage").classList.add("hidden");
+        document.getElementById("patientPage").classList.add("hidden");
+        document.getElementById(page).classList.remove("hidden");
+    }
+
+    // ===================== DOCTOR FUNCTIONS =====================
+    function addDoctor(){
+        let data = {
+            id: did.value,
+            name: dname.value,
+            age: dage.value,
+            spl: dspl.value   // FIXED field name
+        };
+        fetch("http://localhost:8080/doctor/add", {
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify(data)
+        })
+        .then(res => {
+            if(res.ok){
+                doctorAddMsg.innerText = "Doctor Added ✔";
+                doctorAddMsg.className = "message message-success";
+                did.value = ""; dname.value = ""; dage.value = ""; dspl.value = "";
+            } else {
+                doctorAddMsg.innerText = "Error adding doctor ❌";
+                doctorAddMsg.className = "message message-error";
+            }
+        });
+    }
+
+    // FIXED getDoctor function
+    function getDoctor() {
+        const id = dgetId.value.trim();
+
+        if (!id) {
+            doctorResult.innerText = "";
+            doctorGetMsg.innerText = "Please enter an ID";
+            doctorGetMsg.className = "message message-error";
+            return;
+        }
+
+        fetch(`http://localhost:8080/doctor/${id}`)
+            .then(res => {
+                if (!res.ok) throw new Error("Doctor not found ❌");
+                return res.json();
+            })
+            .then(doctor => {
+                doctorResult.innerText =
+`ID: ${doctor.id}
+Name: ${doctor.name}
+Age: ${doctor.age}
+Specialization: ${doctor.spl}`;
+                
+                doctorGetMsg.innerText = "Doctor Found ✔";
+                doctorGetMsg.className = "message message-success";
+            })
+            .catch(err => {
+                doctorResult.innerText = "";
+                doctorGetMsg.innerText = err.message;
+                doctorGetMsg.className = "message message-error";
+            });
+    }
+
+    function deleteDoctor(){
+        fetch("http://localhost:8080/doctor/"+ddelId.value, {method:"DELETE"})
+            .then(res => {
+                if(res.ok){
+                    doctorDelMsg.innerText = "Doctor Deleted ❌";
+                    doctorDelMsg.className = "message message-success";
+                    ddelId.value = "";
+                } else {
+                    doctorDelMsg.innerText = "Error deleting doctor ❌";
+                    doctorDelMsg.className = "message message-error";
+                }
+            });
+    }
+
+    // ===================== PATIENT FUNCTIONS =====================
+    function addPatient(){
+        let data = {
+            id: pid.value,
+            name: pname.value,
+            gender: pgender.value,
+            age: page.value,
+            disease: pdisease.value
+        };
+        fetch("http://localhost:8080/patient/add", {
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify(data)
+        })
+        .then(res => {
+            if(res.ok){
+                patientAddMsg.innerText = "Patient Added ✔";
+                patientAddMsg.className = "message message-success";
+                pid.value=""; pname.value=""; pgender.value=""; page.value=""; pdisease.value="";
+            } else {
+                patientAddMsg.innerText = "Error adding patient ❌";
+                patientAddMsg.className = "message message-error";
+            }
+        });
+    }
+
+    function getPatient(){
+        fetch("http://localhost:8080/patient/"+pgetId.value)
+            .then(r => {
+                if(!r.ok) throw new Error("Patient not found");
+                return r.json();
+            })
+            .then(d => {
+                patientResult.innerText = JSON.stringify(d,null,2);
+                patientGetMsg.innerText = "Patient Found ✔";
+                patientGetMsg.className = "message message-success";
+            })
+            .catch(e => {
+                patientResult.innerText = "";
+                patientGetMsg.innerText = e.message;
+                patientGetMsg.className = "message message-error";
+            });
+    }
+
+    function deletePatient(){
+        fetch("http://localhost:8080/patient/"+pdelId.value, {method:"DELETE"})
+            .then(res => {
+                if(res.ok){
+                    patientDelMsg.innerText = "Patient Deleted ❌";
+                    patientDelMsg.className = "message message-success";
+                    pdelId.value="";
+                } else {
+                    patientDelMsg.innerText = "Error deleting patient ❌";
+                    patientDelMsg.className = "message message-error";
+                }
+            });
+    }
+
+</script>
+
+</body>
+</html>
