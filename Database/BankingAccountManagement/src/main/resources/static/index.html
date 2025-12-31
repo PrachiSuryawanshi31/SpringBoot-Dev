@@ -1,0 +1,412 @@
+<!doctype html>
+<html class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bank Account Manager</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .account-card {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .toast.success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .toast.error {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .loading {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full">
+  <div id="app" class="h-full w-full overflow-auto" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+   <div class="min-h-full p-6">
+    <div class="max-w-6xl mx-auto"><!-- Header -->
+     <div class="text-center mb-8">
+      <h1 id="appTitle" class="text-4xl font-bold text-white mb-2">Bank Account Manager</h1>
+      <p class="text-purple-100">Manage your bank accounts efficiently</p>
+     </div><!-- Add Account Section -->
+     <div class="bg-white rounded-xl shadow-2xl p-6 mb-6">
+      <h2 id="addSectionTitle" class="text-2xl font-bold text-gray-800 mb-4">Create New Account</h2>
+      <form id="addForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+       <div><label for="accountId" class="block text-sm font-semibold text-gray-700 mb-1">Account ID</label> <input id="accountId" type="text" required class="w-full border-2 border-gray-300 rounded-lg p-3 focus:border-purple-500 focus:outline-none transition-colors" placeholder="e.g., ACC001">
+       </div>
+       <div><label for="holderName" class="block text-sm font-semibold text-gray-700 mb-1">Account Holder Name</label> <input id="holderName" type="text" required class="w-full border-2 border-gray-300 rounded-lg p-3 focus:border-purple-500 focus:outline-none transition-colors" placeholder="e.g., John Doe">
+       </div>
+       <div><label for="balance" class="block text-sm font-semibold text-gray-700 mb-1">Initial Balance</label> <input id="balance" type="number" step="0.01" required class="w-full border-2 border-gray-300 rounded-lg p-3 focus:border-purple-500 focus:outline-none transition-colors" placeholder="e.g., 1000.00">
+       </div>
+       <div><label for="accountType" class="block text-sm font-semibold text-gray-700 mb-1">Account Type</label> <select id="accountType" required class="w-full border-2 border-gray-300 rounded-lg p-3 focus:border-purple-500 focus:outline-none transition-colors"> <option value="">Select Type</option> <option value="Savings">Savings</option> <option value="Checking">Checking</option> <option value="Business">Business</option> </select>
+       </div>
+       <div><label for="branch" class="block text-sm font-semibold text-gray-700 mb-1">Branch</label> <input id="branch" type="text" required class="w-full border-2 border-gray-300 rounded-lg p-3 focus:border-purple-500 focus:outline-none transition-colors" placeholder="e.g., Downtown">
+       </div>
+       <div class="flex items-end"><button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 shadow-lg"> Create Account </button>
+       </div>
+      </form>
+     </div><!-- Accounts List -->
+     <div class="bg-white rounded-xl shadow-2xl p-6">
+      <div class="flex justify-between items-center mb-4">
+       <h2 id="viewSectionTitle" class="text-2xl font-bold text-gray-800">View All Accounts</h2>
+       <div class="text-sm font-semibold text-purple-600">
+        Total Accounts: <span id="accountCount">0</span>
+       </div>
+      </div>
+      <div id="accountsList" class="space-y-4"><!-- Accounts will be rendered here -->
+      </div>
+      <div id="emptyState" class="text-center py-12">
+       <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+       </svg>
+       <p class="text-gray-500 text-lg">No accounts yet. Create your first account above!</p>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+        const defaultConfig = {
+            app_title: "Bank Account Manager",
+            add_section_title: "Create New Account",
+            view_section_title: "View All Accounts",
+            primary_color: "#667eea",
+            secondary_color: "#ffffff",
+            text_color: "#1f2937",
+            button_color: "#7c3aed",
+            accent_color: "#818cf8",
+            font_family: "system-ui",
+            font_size: 16
+        };
+
+        let accounts = [];
+        let recordCount = 0;
+
+        const dataHandler = {
+            onDataChanged(data) {
+                accounts = data;
+                recordCount = data.length;
+                renderAccounts();
+            }
+        };
+
+        async function initializeApp() {
+            const initResult = await window.dataSdk.init(dataHandler);
+            if (!initResult.isOk) {
+                showToast("Failed to initialize application", "error");
+                console.error("Data SDK initialization failed");
+            }
+        }
+
+        function showToast(message, type = "success") {
+            const toast = document.createElement("div");
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = "0";
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function setLoading(element, isLoading) {
+            if (isLoading) {
+                element.classList.add("loading");
+            } else {
+                element.classList.remove("loading");
+            }
+        }
+
+        document.getElementById("addForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            if (recordCount >= 999) {
+                showToast("Maximum limit of 999 accounts reached. Please delete some accounts first.", "error");
+                return;
+            }
+
+            const form = e.target;
+            const submitButton = form.querySelector('button[type="submit"]');
+            setLoading(submitButton, true);
+
+            const accountData = {
+                accountId: document.getElementById("accountId").value.trim(),
+                holderName: document.getElementById("holderName").value.trim(),
+                balance: parseFloat(document.getElementById("balance").value),
+                accountType: document.getElementById("accountType").value,
+                branch: document.getElementById("branch").value.trim(),
+                createdAt: new Date().toISOString()
+            };
+
+            // Check for duplicate account ID
+            const duplicate = accounts.find(acc => acc.accountId === accountData.accountId);
+            if (duplicate) {
+                showToast("Account ID already exists!", "error");
+                setLoading(submitButton, false);
+                return;
+            }
+
+            const result = await window.dataSdk.create(accountData);
+            
+            setLoading(submitButton, false);
+
+            if (result.isOk) {
+                showToast("Account created successfully!", "success");
+                form.reset();
+            } else {
+                showToast("Failed to create account. Please try again.", "error");
+            }
+        });
+
+        async function deleteAccount(record) {
+            const card = document.querySelector(`[data-account-id="${record.accountId}"]`);
+            if (!card) return;
+
+            const deleteButton = card.querySelector(".delete-btn");
+            const confirmButton = card.querySelector(".confirm-btn");
+            
+            if (!confirmButton) {
+                // Show confirmation
+                deleteButton.textContent = "Confirm Delete?";
+                deleteButton.classList.remove("bg-red-500", "hover:bg-red-600");
+                deleteButton.classList.add("bg-orange-500", "hover:bg-orange-600", "confirm-btn");
+                
+                // Add cancel button
+                const cancelButton = document.createElement("button");
+                cancelButton.textContent = "Cancel";
+                cancelButton.className = "cancel-btn bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors";
+                cancelButton.onclick = () => {
+                    deleteButton.textContent = "Delete";
+                    deleteButton.classList.remove("bg-orange-500", "hover:bg-orange-600", "confirm-btn");
+                    deleteButton.classList.add("bg-red-500", "hover:bg-red-600");
+                    cancelButton.remove();
+                };
+                deleteButton.parentElement.appendChild(cancelButton);
+                
+                return;
+            }
+
+            setLoading(card, true);
+
+            const result = await window.dataSdk.delete(record);
+            
+            if (result.isOk) {
+                showToast("Account deleted successfully!", "success");
+            } else {
+                showToast("Failed to delete account. Please try again.", "error");
+                setLoading(card, false);
+            }
+        }
+
+        function renderAccounts() {
+            const accountsList = document.getElementById("accountsList");
+            const emptyState = document.getElementById("emptyState");
+            const accountCount = document.getElementById("accountCount");
+
+            accountCount.textContent = accounts.length;
+
+            if (accounts.length === 0) {
+                accountsList.innerHTML = "";
+                emptyState.style.display = "block";
+                return;
+            }
+
+            emptyState.style.display = "none";
+
+            const existingCards = new Map(
+                [...accountsList.children].map(el => [el.dataset.accountId, el])
+            );
+
+            accounts.forEach(account => {
+                if (existingCards.has(account.accountId)) {
+                    updateAccountCard(existingCards.get(account.accountId), account);
+                    existingCards.delete(account.accountId);
+                } else {
+                    accountsList.appendChild(createAccountCard(account));
+                }
+            });
+
+            existingCards.forEach(el => el.remove());
+        }
+
+        function createAccountCard(account) {
+            const card = document.createElement("div");
+            card.className = "account-card border-2 border-gray-200 rounded-lg p-5 hover:shadow-lg transition-shadow";
+            card.dataset.accountId = account.accountId;
+
+            card.innerHTML = `
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">${escapeHtml(account.holderName)}</h3>
+                        <p class="text-sm text-gray-500">ID: ${escapeHtml(account.accountId)}</p>
+                    </div>
+                    <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold">
+                        ${escapeHtml(account.accountType)}
+                    </span>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div>
+                        <p class="text-sm text-gray-600">Balance</p>
+                        <p class="text-2xl font-bold text-green-600">$${account.balance.toFixed(2)}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Branch</p>
+                        <p class="text-lg font-semibold text-gray-800">${escapeHtml(account.branch)}</p>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center pt-3 border-t border-gray-200">
+                    <p class="text-xs text-gray-500">Created: ${new Date(account.createdAt).toLocaleDateString()}</p>
+                    <button class="delete-btn bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+                        Delete
+                    </button>
+                </div>
+            `;
+
+            card.querySelector(".delete-btn").onclick = () => deleteAccount(account);
+
+            return card;
+        }
+
+        function updateAccountCard(card, account) {
+            card.querySelector("h3").textContent = account.holderName;
+            card.querySelector(".text-sm.text-gray-500").textContent = `ID: ${account.accountId}`;
+            card.querySelector(".bg-purple-100").textContent = account.accountType;
+            card.querySelector(".text-2xl").textContent = `$${account.balance.toFixed(2)}`;
+            card.querySelector(".text-lg").textContent = account.branch;
+            card.querySelector(".text-xs").textContent = `Created: ${new Date(account.createdAt).toLocaleDateString()}`;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement("div");
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function onConfigChange(config) {
+            document.getElementById("appTitle").textContent = config.app_title || defaultConfig.app_title;
+            document.getElementById("addSectionTitle").textContent = config.add_section_title || defaultConfig.add_section_title;
+            document.getElementById("viewSectionTitle").textContent = config.view_section_title || defaultConfig.view_section_title;
+
+            const primaryColor = config.primary_color || defaultConfig.primary_color;
+            const secondaryColor = config.secondary_color || defaultConfig.secondary_color;
+            const textColor = config.text_color || defaultConfig.text_color;
+            const buttonColor = config.button_color || defaultConfig.button_color;
+            const accentColor = config.accent_color || defaultConfig.accent_color;
+
+            document.getElementById("app").style.background = `linear-gradient(135deg, ${primaryColor} 0%, ${buttonColor} 100%)`;
+
+            const customFont = config.font_family || defaultConfig.font_family;
+            const baseFontStack = "system-ui, -apple-system, sans-serif";
+            document.body.style.fontFamily = `${customFont}, ${baseFontStack}`;
+
+            const baseSize = config.font_size || defaultConfig.font_size;
+            document.getElementById("appTitle").style.fontSize = `${baseSize * 2.5}px`;
+            document.getElementById("addSectionTitle").style.fontSize = `${baseSize * 1.5}px`;
+            document.getElementById("viewSectionTitle").style.fontSize = `${baseSize * 1.5}px`;
+            document.body.style.fontSize = `${baseSize}px`;
+        }
+
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                onConfigChange,
+                mapToCapabilities: (config) => ({
+                    recolorables: [
+                        {
+                            get: () => config.primary_color || defaultConfig.primary_color,
+                            set: (value) => {
+                                config.primary_color = value;
+                                window.elementSdk.setConfig({ primary_color: value });
+                            }
+                        },
+                        {
+                            get: () => config.secondary_color || defaultConfig.secondary_color,
+                            set: (value) => {
+                                config.secondary_color = value;
+                                window.elementSdk.setConfig({ secondary_color: value });
+                            }
+                        },
+                        {
+                            get: () => config.text_color || defaultConfig.text_color,
+                            set: (value) => {
+                                config.text_color = value;
+                                window.elementSdk.setConfig({ text_color: value });
+                            }
+                        },
+                        {
+                            get: () => config.button_color || defaultConfig.button_color,
+                            set: (value) => {
+                                config.button_color = value;
+                                window.elementSdk.setConfig({ button_color: value });
+                            }
+                        },
+                        {
+                            get: () => config.accent_color || defaultConfig.accent_color,
+                            set: (value) => {
+                                config.accent_color = value;
+                                window.elementSdk.setConfig({ accent_color: value });
+                            }
+                        }
+                    ],
+                    borderables: [],
+                    fontEditable: {
+                        get: () => config.font_family || defaultConfig.font_family,
+                        set: (value) => {
+                            config.font_family = value;
+                            window.elementSdk.setConfig({ font_family: value });
+                        }
+                    },
+                    fontSizeable: {
+                        get: () => config.font_size || defaultConfig.font_size,
+                        set: (value) => {
+                            config.font_size = value;
+                            window.elementSdk.setConfig({ font_size: value });
+                        }
+                    }
+                }),
+                mapToEditPanelValues: (config) => new Map([
+                    ["app_title", config.app_title || defaultConfig.app_title],
+                    ["add_section_title", config.add_section_title || defaultConfig.add_section_title],
+                    ["view_section_title", config.view_section_title || defaultConfig.view_section_title]
+                ])
+            });
+        }
+
+        initializeApp();
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ac5c337836d47d5',t:'MTc2NTQ2NDI5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
