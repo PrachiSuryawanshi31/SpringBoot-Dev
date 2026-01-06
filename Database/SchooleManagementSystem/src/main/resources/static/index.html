@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>School Management — Home</title>
+
+<style>
+  :root{
+    --bg:#f4f7fb;
+    --card:#ffffff;
+    --accent:#2563eb;
+    --accent-dark:#1e40af;
+    --text:#0f172a;
+    --muted:#64748b;
+  }
+
+  *{
+    box-sizing:border-box;
+    font-family: "Segoe UI", system-ui, Arial;
+  }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background:linear-gradient(180deg,#e0ecff 0%, #f8fbff 100%);
+    color:var(--text);
+  }
+
+  /* Navbar */
+  .nav{
+    display:flex;
+    align-items:center;
+    padding:16px 28px;
+    background:#ffffff;
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .brand{
+    font-size:20px;
+    font-weight:700;
+    color:var(--accent-dark);
+  }
+
+  .links{
+    margin-left:auto;
+    display:flex;
+    gap:12px;
+  }
+
+  .nav button{
+    background:transparent;
+    border:1px solid var(--accent);
+    color:var(--accent);
+    padding:8px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.2s;
+    font-weight:500;
+  }
+
+  .nav button:hover{
+    background:var(--accent);
+    color:#fff;
+  }
+
+  /* Main container */
+  .container{
+    max-width:1200px;
+    margin:40px auto;
+    padding:20px;
+  }
+
+  h1{
+    text-align:center;
+    margin-bottom:30px;
+    color:var(--accent-dark);
+  }
+
+  /* Grid */
+  .section-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:24px;
+  }
+
+  /* Cards */
+  .sec-card{
+    background:var(--card);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 10px 25px rgba(0,0,0,0.1);
+    transition:0.25s;
+  }
+
+  .sec-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 16px 35px rgba(37,99,235,0.25);
+  }
+
+  .sec-img{
+    width:100%;
+    height:160px;
+    object-fit:cover;
+  }
+
+  .sec-body{
+    padding:18px;
+  }
+
+  .sec-title{
+    margin:0 0 8px 0;
+    font-size:18px;
+    color:var(--accent-dark);
+  }
+
+  .sec-desc{
+    font-size:14px;
+    color:var(--muted);
+    margin-bottom:16px;
+  }
+
+  .sec-btn{
+    width:100%;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    background:linear-gradient(90deg,var(--accent),var(--accent-dark));
+    color:#fff;
+    font-size:15px;
+    cursor:pointer;
+    transition:0.2s;
+  }
+
+  .sec-btn:hover{
+    opacity:0.9;
+  }
+</style>
+</head>
+
+<body>
+
+<nav class="nav">
+  <div class="brand">SchoolMgmt</div>
+  <div class="links">
+    <button onclick="location.href='home.html'">Home</button>
+    <button onclick="location.href='student.html'">Student</button>
+    <button onclick="location.href='teacher.html'">Teacher</button>
+    <button onclick="location.href='staff.html'">Staff</button>
+    <button onclick="location.href='library.html'">Library</button>
+  </div>
+</nav>
+
+<main class="container">
+  <h1>Welcome to School Management System</h1>
+
+  <div class="section-grid">
+
+    <div class="sec-card">
+      <img class="sec-img" src="https://i.pinimg.com/736x/c8/9c/89/c89c898f44aa5f7137901993c2afbd00.jpg">
+      <div class="sec-body">
+        <h3 class="sec-title">Student Management</h3>
+        <p class="sec-desc">Add, update, view and delete student records easily.</p>
+        <button class="sec-btn" onclick="location.href='student.html'">Open Students</button>
+      </div>
+    </div>
+
+    <div class="sec-card">
+      <img class="sec-img" src="https://i.pinimg.com/1200x/40/b7/17/40b717e80fe72dae7fb9abfbd0acfd6e.jpg">
+      <div class="sec-body">
+        <h3 class="sec-title">Teacher Management</h3>
+        <p class="sec-desc">Manage teacher profiles, subjects, salary & joining details.</p>
+        <button class="sec-btn" onclick="location.href='teacher.html'">Open Teachers</button>
+      </div>
+    </div>
+
+    <div class="sec-card">
+      <img class="sec-img" src="https://i.pinimg.com/736x/e1/d6/4c/e1d64ce269a4c0c3b5ed471b159051bd.jpg">
+      <div class="sec-body">
+        <h3 class="sec-title">Staff Management</h3>
+        <p class="sec-desc">Manage non-teaching staff records and roles.</p>
+        <button class="sec-btn" onclick="location.href='staff.html'">Manage Staff</button>
+      </div>
+    </div>
+
+    <div class="sec-card">
+      <img class="sec-img" src="https://i.pinimg.com/736x/ef/05/20/ef0520863b4fe5fb89e893f483dc1b41.jpg">
+      <div class="sec-body">
+        <h3 class="sec-title">Library Management</h3>
+        <p class="sec-desc">Track books, issue records, availability and more.</p>
+        <button class="sec-btn" onclick="location.href='library.html'">Open Library</button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Teacher Management</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #e7f0ff;
+        margin: 0;
+        padding: 0;
+    }
+    .nav {
+        background: #023e8a;
+        padding: 15px;
+        display: flex;
+        gap: 20px;
+    }
+    .nav a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .container {
+        max-width: 600px;
+        margin: 30px auto;
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgb(173, 216, 230);
+    }
+    input, select {
+        width: 100%;
+        padding: 10px;
+        margin: 7px 0;
+        border: 1px solid #aaa;
+        border-radius: 5px;
+    }
+    button {
+        padding: 10px 18px;
+        background: #0077b6;
+        border: none;
+        color: white;
+        border-radius: 6px;
+        margin-top: 10px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    button:hover {
+        background: #023e8a;
+        transform: scale(1.05);
+    }
+    #output {
+        white-space: pre-wrap;
+        background: #f8f9fa;
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid #0077b6;
+        font-size: 14px;
+    }
+</style>
+</head>
+<body>
+
+<div class="nav">
+    <a href="home.html">Home</a>
+    <a href="student.html">Student</a>
+    <a href="teacher.html">Teacher</a>
+    <a href="staff.html">Staff</a>
+    <a href="library.html">Library</a>
+</div>
+
+<div class="container">
+    <h2>Teacher Management</h2>
+
+    <label>ID</label>
+    <input type="number" id="id">
+
+    <label>First Name</label>
+    <input type="text" id="firstName">
+
+    <label>Last Name</label>
+    <input type="text" id="lastName">
+
+    <label>Gender</label>
+    <select id="gender">
+        <option value="">Select</option>
+        <option>Male</option>
+        <option>Female</option>
+    </select>
+
+    <label>Date of Birth</label>
+    <input type="date" id="dateOfBirth">
+
+    <label>Qualification</label>
+    <input type="text" id="qualification">
+
+    <label>Subject</label>
+    <input type="text" id="subject">
+
+    <label>Joining Date</label>
+    <input type="date" id="joiningDate">
+
+    <label>Salary</label>
+    <input type="number" id="salary" step="0.01">
+
+    <label>Email</label>
+    <input type="email" id="email">
+
+    <label>Phone No</label>
+    <input type="number" id="phoneNo">
+
+    <label>Address</label>
+    <input type="text" id="address">
+
+    <button onclick="addTeacher()">Add Teacher</button>
+    <button onclick="getAllTeachers()">Get All Teachers</button>
+    <button onclick="getTeacherById()">Get Teacher By ID</button>
+    <button onclick="deleteTeacher()">Delete Teacher</button>
+
+    <h3>Output:</h3>
+    <div id="output">No data yet...</div>
+</div>
+
+<script>
+const API = "http://localhost:8080/teacher";
+
+function showOutput(data) {
+    document.getElementById("output").textContent = data;
+}
+
+// Clear all input fields
+function clearForm() {
+    document.getElementById("id").value = '';
+    document.getElementById("firstName").value = '';
+    document.getElementById("lastName").value = '';
+    document.getElementById("gender").value = '';
+    document.getElementById("dateOfBirth").value = '';
+    document.getElementById("qualification").value = '';
+    document.getElementById("subject").value = '';
+    document.getElementById("joiningDate").value = '';
+    document.getElementById("salary").value = '';
+    document.getElementById("email").value = '';
+    document.getElementById("phoneNo").value = '';
+    document.getElementById("address").value = '';
+}
+
+// Add Teacher
+async function addTeacher() {
+    const teacher = {
+        id: document.getElementById("id").value,
+        firstName: document.getElementById("firstName").value,
+        lastName: document.getElementById("lastName").value,
+        gender: document.getElementById("gender").value,
+        dateOfBirth: document.getElementById("dateOfBirth").value,
+        qualification: document.getElementById("qualification").value,
+        subject: document.getElementById("subject").value,
+        joiningDate: document.getElementById("joiningDate").value,
+        salary: document.getElementById("salary").value,
+        email: document.getElementById("email").value,
+        phoneNo: document.getElementById("phoneNo").value,
+        address: document.getElementById("address").value
+    };
+
+    let res = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(teacher)
+    });
+
+    let text = await res.text();
+    showOutput("✔ Teacher Added Successfully\n\n" + JSON.stringify(teacher, null, 2));
+    clearForm();
+}
+
+// Get All Teachers
+async function getAllTeachers() {
+    let res = await fetch(API + "/getAll");
+    let data = await res.json();
+
+    if (data.length === 0) {
+        showOutput("No teacher records found.");
+        return;
+    }
+
+    let formatted = "";
+    data.forEach(t => {
+        formatted += JSON.stringify(t, null, 2) + "\n";
+    });
+
+    showOutput(formatted);
+}
+
+// Get Teacher by ID
+async function getTeacherById() {
+    const id = document.getElementById("id").value;
+    if (!id) {
+        showOutput("Please enter an ID to search.");
+        return;
+    }
+
+    try {
+        let res = await fetch(`${API}/${id}`);
+        if (!res.ok) {
+            showOutput(`No data found for ID ${id}`);
+            return;
+        }
+        let teacher = await res.json();
+        showOutput(JSON.stringify(teacher, null, 2));
+        clearForm();
+    } catch (err) {
+        showOutput(`No data found for ID ${id}`);
+    }
+}
+
+// Delete Teacher
+async function deleteTeacher() {
+    const id = document.getElementById("id").value;
+    if (!id) {
+        showOutput("Please enter an ID to delete.");
+        return;
+    }
+
+    try {
+        let res = await fetch(`${API}/${id}`, { method: "DELETE" });
+        if (!res.ok) {
+            showOutput(`No data found for ID ${id}`);
+            return;
+        }
+        let msg = await res.text();
+        showOutput("✔ " + msg);
+        clearForm();
+    } catch (err) {
+        showOutput(`No data found for ID ${id}`);
+    }
+}
+</script>
+
+</body>
+</html>
