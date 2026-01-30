@@ -1,0 +1,68 @@
+package com.example.demo.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.constant.MessageConstant;
+import com.example.demo.entity.Course;
+import com.example.demo.service.CourseService;
+
+@RestController
+@RequestMapping("course")
+public class CourseController {
+	
+	@Autowired
+	CourseService courseService;
+
+	@PostMapping("add")
+	public String addCourse(@RequestBody Course course)
+	{
+		courseService.addCourse(course);
+		return MessageConstant.COURSE_ADDED;
+		
+	}
+
+	@PutMapping("update")
+	public Course updateCourse(@RequestBody Course course)
+	{
+		return courseService.updateCourse(course);
+	}
+	
+	@GetMapping("getAll")
+	public List<Course> getAllCourse(@RequestBody Course course)
+	{
+		return courseService.getAllCourse(course);
+		
+	}
+	
+	@GetMapping("get/{courseId}")
+	public Course getCourse(@PathVariable int courseId)
+	{
+		return courseService.getCourse(courseId);
+		
+	}
+	
+	@DeleteMapping("deleteAll")
+	public String deleteAllCourse(@RequestBody Course course)
+	{
+		courseService.deleteAllCourse(course);
+		return MessageConstant.ALL_COURSE_DELETED;
+	}
+	
+	@DeleteMapping("delete/{courseId}")
+	public String deleteCourse(@PathVariable int courseId)
+	{
+		courseService.deleteCourse(courseId);
+		return MessageConstant.COURSE_DELETED;
+		
+	}
+}
