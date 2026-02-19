@@ -1,0 +1,30 @@
+import java.util.LinkedHashSet;
+
+public class CheckEquality {
+	
+	public static void main(String[] args) {
+		
+		LinkedHashSet<Integer> set1 = new LinkedHashSet<Integer>();
+		LinkedHashSet<Integer> set2 = new LinkedHashSet<Integer>();
+	
+		set1.add(10);
+		set1.add(20);
+		set1.add(30);
+		set1.add(40);
+		
+		set2.add(100);
+		set2.add(30);
+		set2.add(20);
+		set2.add(10);
+		
+		if(set1.equals(set2))
+		{
+			System.out.println("Equal");
+		}
+		else
+		{
+			System.out.println("Not Equal");
+		}
+		
+	}
+}
